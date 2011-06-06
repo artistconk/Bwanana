@@ -1,4 +1,4 @@
-h2. Scoring System
+## Scoring System
 
 This one it easy. The bot allows users to score each other, and saves all the scores to a database.
 
@@ -24,7 +24,7 @@ _!best_
 shows the last 10
 _!worst_
 
-h2. IsItDown
+## IsItDown
 
 This one’s even easier
 
@@ -32,13 +32,13 @@ This one’s even easier
 checks if the website at is really down, of if it’s just you
 _!isitdown google.com_
 
-h2. Google
+## Google
 
 *!google*
 does a google search, and returns the top result
 _!google search_
 
-h2. Damn
+## Damn
 
 *!damn*
 takes , and returns “damn you, you little ! i’m going to strangle you!”
@@ -46,11 +46,11 @@ _!damn Bart_
 
 I created that one out of frustration about my router, which constantly disconnects me…
 
-h2. Phrases
+## Phrases
 
 This is where it gets interesting. Anybody can create new phrases. You know, the things where you type “!” and the bot says something. It’s pretty easy:
 
-h3. Create
+### Create
 
 *!rem =*
 sets a phrase
@@ -67,13 +67,13 @@ removes text from an existing phrase
 _!rem foo -= bar_
 !foo now returns "bar" again
 
-h3. Randomize
+### Randomize
 
 *!rem = $rand(%)*
 creates a randomizer from all existing phrases “1”, “2”, “3”, and so on. Those have to be set first!
 _!rem foo = $rand(foo%)_
 
-h3. Forget
+### Forget
 
 You can also delete phrases (just the ones you set yourself).
 
@@ -81,7 +81,7 @@ You can also delete phrases (just the ones you set yourself).
 Deletes a stored phrase
 _!forget foo_
 
-h3. Give
+### Give
 
 Once a phrase is set, you can “give” it to people. When you do that, the bot puts the name of the person you are giving it to in front of the phrase, thereby highlighting that person.
 
@@ -89,7 +89,7 @@ Once a phrase is set, you can “give” it to people. When you do that, the bot
 Gives a phrase to somebody
 _!give crshd foo_
 
-h3. Find
+### Find
 
 If you think there’s a phrase, but can’t exactly remember the command, _find_ helps.
 
@@ -97,7 +97,7 @@ If you think there’s a phrase, but can’t exactly remember the command, _find
 returns all phrases that are close
 _!find foo_
 
-h2. Pokes
+## Pokes
 
 *!poke*
 Pokes nick with a random poke.
@@ -111,13 +111,13 @@ _!rempoke pokes %s with a stick_
 Forgets a poke. Only the user who set the poke can delete it.
 _!forgetpoke pokes %s with a stick_
 
-h2. Cookies
+## Cookies
 
 *!cookie*
 Gives a cookie to somebody
 _!cookie crshd_
 
-h2. Weather
+## Weather
 
 *!weather*
 Shows weather at stored location (need to store location first!)
@@ -150,7 +150,7 @@ Converts temperature between °F and °C
 _!weather convert 96F_
 _!weather convert 35C_
 
-h2. Non-User Controlled Functions
+## Non-User Controlled Functions
 
 There’s also some functions that are not controlled by users
 
