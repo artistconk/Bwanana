@@ -2,25 +2,25 @@
 
 This one it easy. The bot allows users to score each other, and saves all the scores to a database.
 
-*!++*  
+**!++**  
 to increase somebody’s score by 1  
 _!++crshd_
 
-*!--*  
+**!--**  
 to decrease somebody’s score by 1  
 _!--crshd_
 
 But beware, if you try to increase your own score, the bot will actually decrease it by 1, to punish you for cheating :D
 
-*!score*  
+**!score**  
 shows current score  
 _!score crshd_
 
-*!best*  
+**!best**  
 shows the top 10  
 _!best_
 
-*!worst*  
+**!worst**  
 shows the last 10  
 _!worst_
 
@@ -28,19 +28,19 @@ _!worst_
 
 This one’s even easier
 
-*!isitdown*  
+**!isitdown**  
 checks if the website at is really down, of if it’s just you  
 _!isitdown google.com_
 
 ## Google
 
-*!google*  
+**!google**  
 does a google search, and returns the top result  
 _!google search_
 
 ## Damn
 
-*!damn*  
+**!damn**  
 takes , and returns “damn you, you little ! i’m going to strangle you!”  
 _!damn Bart_
 
@@ -52,24 +52,24 @@ This is where it gets interesting. Anybody can create new phrases. You know, the
 
 ### Create
 
-*!rem =*  
+**!rem =**  
 sets a phrase  
 _!rem foo = bar_  
 !foo now return "bar"
 
-*!rem +=*  
+**!rem +=**  
 adds to an already existing phrase  
 _!rem foo += bar_  
 !foo now returns "barbar"
 
-*!rem -=*
+**!rem -=**  
 removes text from an existing phrase  
 _!rem foo -= bar_  
 !foo now returns "bar" again
 
 ### Randomize
 
-*!rem = $rand(%)*  
+**!rem = $rand(%)**  
 creates a randomizer from all existing phrases “1”, “2”, “3”, and so on. Those have to be set first!  
 _!rem foo = $rand(foo%)_
 
@@ -77,7 +77,7 @@ _!rem foo = $rand(foo%)_
 
 You can also delete phrases (just the ones you set yourself).
 
-*!forget*  
+**!forget**  
 Deletes a stored phrase  
 _!forget foo_
 
@@ -85,7 +85,7 @@ _!forget foo_
 
 Once a phrase is set, you can “give” it to people. When you do that, the bot puts the name of the person you are giving it to in front of the phrase, thereby highlighting that person.
 
-*!give*  
+**!give**  
 Gives a phrase to somebody  
 _!give crshd foo_
 
@@ -93,59 +93,59 @@ _!give crshd foo_
 
 If you think there’s a phrase, but can’t exactly remember the command, _find_ helps.
 
-*!find*  
+**!find**  
 returns all phrases that are close  
 _!find foo_
 
 ## Pokes
 
-*!poke*  
+**!poke**  
 Pokes nick with a random poke.  
 _!poke crshd_
 
-*!rempoke*  
+**!rempoke**  
 Saves a poke. %s gets replaced with the poked user.  
 _!rempoke pokes %s with a stick_
 
-*!forgetpoke*  
+**!forgetpoke**  
 Forgets a poke. Only the user who set the poke can delete it.  
 _!forgetpoke pokes %s with a stick_
 
 ## Cookies
 
-*!cookie*  
+**!cookie**  
 Gives a cookie to somebody  
 _!cookie crshd_
 
 ## Weather
 
-*!weather*  
+**!weather**  
 Shows weather at stored location (need to store location first!)  
 _!weather_
 
-*!weather search*  
+**!weather search**  
 Searches for location code  
 _!weather search new york_
 
-*!weather save*  
+**!weather save**  
 Saves your location to the database  
 _!weather save USNY0996_
 
-*!weather forecast*  
+**!weather forecast**  
 Shows 5-day forecast. Uses stored location when no location specified.  
 _!weather forecast_  
 _!weather forecast USNY0996_
 
-*!weather report*  
+**!weather report**  
 Shows current weather at location  
 _!weather report USNY0996_
 
-*!weather map*  
+**!weather map**  
 Shows link to weather map. Uses stored location when no location specified.  
 _!weather map_  
 _!weather map USNY0996_
 
-*!weather convert*  
+**!weather convert**  
 Converts temperature between °F and °C  
 _!weather convert 96F_  
 _!weather convert 35C_
@@ -154,10 +154,10 @@ _!weather convert 35C_
 
 There’s also some functions that are not controlled by users
 
-*URL titles*
+**URL titles**
 
 When a URL is posted by somebody in the chat room, the bot displays the title of the page linked to.
 
-*Submission notifications*
+**Submission notifications**
 
 The bot checks PF periodically to see if something new has been submitted to pixelfuckers.org. If it finds something, it will display a notification in the chatroom, showing the submissions title, the user who submitted it, and the link to the submission.
