@@ -1,11 +1,10 @@
 #!/usr/bin/ruby
 #
-# @file Bot
+# Channel bot for #pixelfuckers
 #
-# @copyright (c) 2010, Christoph Kappel <unexist@dorfelite.net>
-# @version $Id: bot/cinch.rb,v 208 2011/01/18 20:56:21 unexist $
-#
-# Channel bot for #subtle, based on cinch. (https://github.com/cinchrb/cinch)
+# based on Geass:
+#   @copyright (c) 2010, Christoph Kappel <unexist@dorfelite.net>
+#   @version $Id: bot/cinch.rb,v 208 2011/01/18 20:56:21 unexist $
 #
 require "rubygems"
 require "cinch"
