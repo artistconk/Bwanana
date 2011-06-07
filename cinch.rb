@@ -6,6 +6,7 @@
 #   @copyright (c) 2010, Christoph Kappel <unexist@dorfelite.net>
 #   @version $Id: bot/cinch.rb,v 208 2011/01/18 20:56:21 unexist $
 #
+# Requires {{{
 require "rubygems"
 require "cinch"
 require "cgi"
@@ -19,15 +20,19 @@ require "feedzirra"
 require "open-uri"
 require "uri"
 require "time"
+# }}}
 
-# Config
+# Config {{{
 NICK      = "Bwanana"
 CHANNEL   = "#pixelfuckers"
 SECRET    = "doyoureallythinkiputthisinhere"
 INTERVAL  = 300
 
+FEED        = "http://pixelfuckers.org/submissions.atom"
+
 WEATHER_PAR = "1079693758"
 WEATHER_API = "a6939d9b2b51255c"
+# }}}
 
 # Database {{{
 DBFILE =  "/home/crshd/.config/cinch/database.db"
@@ -660,7 +665,7 @@ module Plugins
 
     timer INTERVAL, method: :updatefeed
     def updatefeed
-      feed = Feedzirra::Feed.fetch_and_parse( "http://pixelfuckers.org/submissions.atom" )
+      feed = Feedzirra::Feed.fetch_and_parse( FEED )
       sub = feed.entries.first
       if defined? @old
         printnew sub unless sub.title == @old
@@ -948,20 +953,9 @@ module Plugins
   end # }}}
 end # }}}
 
-# Helpers {{{
-def isdaddy(n)
-  d = Daddy.first( :nick => n )
-  unless d.nil?
-    true
-  else
-    false
-  end
-end
-# }}}
-
-# Create bot
+# Create bot {{{
 bot = Cinch::Bot.new do
-  configure do |c|
+  configure do |c| # {{{
   c.nick            = NICK
   c.server          = "irc.freenode.org"
   c.port            = 6667
@@ -982,7 +976,18 @@ bot = Cinch::Bot.new do
     Plugins::Daddies,
     Plugins::Identify
   ]
-  end
-end
+  end # }}}
+
+  helpers do # {{{
+    def isdaddy(n)
+      d = Daddy.first( :nick => n )
+      unless d.nil?
+        true
+      else
+        false
+      end
+    end
+  end # }}}
+end # }}}
 
 bot.start
