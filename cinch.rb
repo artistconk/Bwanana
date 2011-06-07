@@ -670,7 +670,7 @@ module Plugins
 
     match /damn (.+)/, method: :damn_something
     def damn_something(m, phrase)
-      m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"      
+      m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"
     end
   end # }}}
 
@@ -716,7 +716,7 @@ module Plugins
 
   class Rename # {{{
     include Cinch::Plugin
-    
+
     listen_to :quit, method: :listen
     def listen(m)
       @bot.nick = "Bwanana" if m.user.nick == "Bwanana"
