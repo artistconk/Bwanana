@@ -23,6 +23,7 @@ require "time"
 # Config
 NICK      = "Bwanana"
 CHANNEL   = "#pixelfuckers"
+SECRET    = "doyoureallythinkiputthisinhere"
 INTERVAL  = 300
 
 WEATHER_PAR = "1079693758"
@@ -936,6 +937,15 @@ module Plugins
     end
 
   end # }}}
+
+  class Identify # {{{
+    include Cinch::Plugin
+
+    listen_to :connect, method: :identify
+    def identify(m)
+      User("nickserv").send("identify" + SECRET)
+    end
+  end # }}}
 end # }}}
 
 # Helpers {{{
@@ -969,7 +979,8 @@ bot = Cinch::Bot.new do
     Plugins::Pokes,
     Plugins::Cookies,
     Plugins::Weathers,
-    Plugins::Daddies
+    Plugins::Daddies,
+    Plugins::Identify
   ]
   end
 end
