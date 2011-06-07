@@ -488,14 +488,14 @@ module Plugins
     include Cinch::Plugin
     react_on :channel
 
-    match /poke (.+)/, :method => :poke
+    match /poke (.+)/, method: :poke
     def poke(m, nick)
       r = rand(Poke.all.size)
       poke = Poke.all[r].action.sub( "%s", nick )
       m.reply "%s %s" % [ m.user.nick, poke ]
     end
 
-    match /rempoke (.+)/, :method => :addpoke
+    match /rempoke (.+)/, method: :addpoke
     def addpoke(m, action)
       begin
         poke = Poke.new(
@@ -512,7 +512,7 @@ module Plugins
       end
     end
 
-    match /forgetpoke (.+)/, :method => :removepoke
+    match /forgetpoke (.+)/, method: :removepoke
     def removepoke(m, action)
       begin
         p = Poke.first( :action => action )
@@ -534,7 +534,7 @@ module Plugins
     include Cinch::Plugin
     react_on :channel
 
-    match /cookie (.+)/, :method => :poke
+    match /cookie (.+)/, method: :poke
     def poke(m, nick)
       m.reply "%s gives a cookie to %s" % [ m.user.nick, nick ]
     end
@@ -653,7 +653,7 @@ module Plugins
     include Cinch::Plugin
     react_on :channel
 
-    match /damn (.+)/, :method => :damn_something
+    match /damn (.+)/, method: :damn_something
     def damn_something( m, phrase )
       m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"      
     end
@@ -901,7 +901,7 @@ module Plugins
     include Cinch::Plugin
     react_on :channel
 
-    match /whosyourdaddy/, :method => :daddy
+    match /whosyourdaddy/, method: :daddy
     def daddy(m)
       begin
         d = Daddy.first
@@ -923,7 +923,7 @@ module Plugins
       end
     end
 
-    match /alsodaddy (.+)/, :method => :alsodaddy
+    match /alsodaddy (.+)/, method: :alsodaddy
     def alsodaddy(m, nick)
       begin
         if isdaddy(m.user.nick)
@@ -944,12 +944,12 @@ module Plugins
   end # }}}
 
   class Identify # {{{
-    include Cinch::Plugin
+    include Cinch::Plugin
 
-    listen_to :connect, method: :identify
-    def identify(m)
-      User("nickserv").send("identify " + SECRET)
-    end
+    listen_to :connect, method: :identify
+    def identify(m)
+      User("nickserv").send("identify " + SECRET)
+    end
   end # }}}
 end # }}}
 
