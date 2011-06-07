@@ -1058,6 +1058,16 @@ module Plugins
 
 end # }}}
 
+# Helpers {{{
+def isdaddy(n)
+  d = Daddy.first(:nick => n)
+  unless d.nil?
+    true
+  else
+    false
+  end
+end # }}}
+
 # Create bot {{{
 bot = Cinch::Bot.new do
   configure do |c| # {{{
@@ -1082,17 +1092,6 @@ bot = Cinch::Bot.new do
     Plugins::Identify,
     Plugins::Twentyones
   ]
-  end # }}}
-
-  helpers do # {{{
-    def isdaddy(n)
-      d = Daddy.first(:nick => n)
-      unless d.nil?
-        true
-      else
-        false
-      end
-    end
   end # }}}
 end # }}}
 bot.start
