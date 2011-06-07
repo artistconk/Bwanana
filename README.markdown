@@ -1,3 +1,15 @@
+## Daddy
+
+This is used to register a user as admin. This is the first thing you should do when after setting up the bot
+
+**!whosyourdaddy**  
+registers yourself as admin. Only works one time.  
+_!whosyourdaddy_
+
+**!alsodaddy**  
+if used by an admin, this adds another user as admin  
+_!alsodaddy crshd_
+
 ## Scoring System
 
 This one it easy. The bot allows users to score each other, and saves all the scores to a database.

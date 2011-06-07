@@ -34,6 +34,13 @@ DBFILE =  "/home/crshd/.config/cinch/database.db"
 DataMapper.setup(:default, "sqlite3:///" + DBFILE)
 
 # Models
+class Daddy # {{{
+  include DataMapper::Resource
+
+  property(:id,         Serial)
+  property(:nick,       String)
+end # }}}
+
 class Phrase # {{{
   include DataMapper::Resource
 
@@ -311,7 +318,7 @@ module Plugins
           end
 
           # Check owner
-          if(v.nick == m.user.nick)
+          if v.nick == m.user.nick or isdaddy( m.user.nick )
             v.destroy!
 
             # Delete version or whole phrase
@@ -503,7 +510,7 @@ module Plugins
     def removepoke(m, action)
       begin
         p = Poke.first( :action => action )
-        if ( p.nick == m.user.nick )
+        if m.user.nick == p.nick or isdaddy(m.user.nick)
           p.destroy!
           m.reply "a'ight", true
         else
@@ -696,7 +703,7 @@ module Plugins
 
     match /rename (.+)/, method: :rename
     def rename(m, name)
-      if m.user.nick == "crshd"
+      if isdaddy( m.user.nick )
         @bot.nick = name
         m.reply "a'ight", true
       else
@@ -884,7 +891,63 @@ module Plugins
     end # }}}
   end # }}}
 
+  class Daddies # {{{
+    include Cinch::Plugin
+    react_on :channel
+
+    match /whosyourdaddy/, :method => :daddy
+    def daddy(m)
+      begin
+        d = Daddy.first
+        if d.nil?
+          dad = Daddy.new(
+            :nick   => m.user.nick
+          )
+          dad.save
+
+          m.reply "You're my daddy!", true
+        elsif isdaddy(m.user.nick)
+          m.reply "I wuv you daddy!", true
+        else
+          m.reply "You're not my daddy", true
+        end
+      rescue
+        m.reply "Oops, something went wrong", true
+        raise
+      end
+    end
+
+    match /alsodaddy (.+)/, :method => :alsodaddy
+    def alsodaddy(m, nick)
+      begin
+        if isdaddy(m.user.nick)
+          dad = Daddy.new(
+            :nick   => nick
+          )
+          dad.save
+
+          m.reply "a'ight", true
+        else
+          m.reply "You're not my daddy", true
+        end
+      rescue
+        m.reply "Oops, something went wrong", true
+      end
+    end
+
+  end # }}}
 end # }}}
+
+# Helpers {{{
+def isdaddy(n)
+  d = Daddy.first( :nick => n )
+  unless d.nil?
+    true
+  else
+    false
+  end
+end
+# }}}
 
 # Create bot
 bot = Cinch::Bot.new do
@@ -905,7 +968,8 @@ bot = Cinch::Bot.new do
     Plugins::Rename,
     Plugins::Pokes,
     Plugins::Cookies,
-    Plugins::Weathers
+    Plugins::Weathers,
+    Plugins::Daddies
   ]
   end
 end
