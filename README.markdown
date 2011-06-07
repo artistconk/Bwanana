@@ -162,6 +162,22 @@ Converts temperature between °F and °C
 _!weather convert 96F_  
 _!weather convert 35C_
 
+## Twentyone
+
+The bot can play a game of 21 (with dice)
+
+**!twentyone**  
+Starts a game, and rolls 4 dice for the player  
+_!twentyone_)
+
+**!roll**  
+Rolls another die  
+_!roll_
+
+**!stand**  
+Stays, and lets the dealer roll  
+_!stand_
+
 ## Non-User Controlled Functions
 
 There’s also some functions that are not controlled by users

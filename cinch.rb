@@ -1,11 +1,10 @@
 #!/usr/bin/ruby
-#
 # Channel bot for #pixelfuckers
 #
 # based on Geass:
 #   @copyright (c) 2010, Christoph Kappel <unexist@dorfelite.net>
 #   @version $Id: bot/cinch.rb,v 208 2011/01/18 20:56:21 unexist $
-#
+
 # Requires {{{
 require "rubygems"
 require "cinch"
@@ -23,20 +22,28 @@ require "time"
 # }}}
 
 # Config {{{
-NICK      = "Bwanana"
-CHANNEL   = "#pixelfuckers"
-SECRET    = "doyoureallythinkiputthisinhere"
-INTERVAL  = 300
+# Server
+SERVER      = "irc.freenode.org"
+PORT        = 6667
+CHANNEL     = "#pixelfuckers"
 
+# Bot
+NICK        = "Bwanana"
+SECRET      = "doyoureallythinkiputthisinhere"
+INTERVAL    = 300
+
+# RSS Feed
 FEED        = "http://pixelfuckers.org/submissions.atom"
 
+# Weather.com API
 WEATHER_PAR = "1079693758"
 WEATHER_API = "a6939d9b2b51255c"
+
+# Database
+DBFILE      = "/home/crshd/.config/cinch/database.db"
 # }}}
 
 # Database {{{
-DBFILE =  "/home/crshd/.config/cinch/database.db"
-
 DataMapper.setup(:default, "sqlite3:///" + DBFILE)
 
 # Models
@@ -116,6 +123,14 @@ class Weather # {{{
   property(:postal,     String)
 end # }}}
 
+class Twentyone # {{{
+  include DataMapper::Resource
+
+  property(:id,         Serial)
+  property(:nick,       String)
+  property(:value,      Integer)
+end # }}}
+
 # If database doesn't exist, create. Else update
 if(!File.exists?(DBFILE))
   DataMapper.auto_migrate!
@@ -147,7 +162,7 @@ module Plugins
         end
 
         # In-/decrease score
-        if( m.user.nick.downcase.strip == lookup )
+        if(m.user.nick.downcase.strip == lookup)
           score.score = score.score - 1
         else
           score.score = case op
@@ -156,7 +171,7 @@ module Plugins
           end
         end
 
-        if( score.score == 0 )
+        if(score.score == 0)
           score.destroy!
 
           m.reply "Zeroed out", true
@@ -324,7 +339,7 @@ module Plugins
           end
 
           # Check owner
-          if v.nick == m.user.nick or isdaddy( m.user.nick )
+          if v.nick == m.user.nick or isdaddy(m.user.nick)
             v.destroy!
 
             # Delete version or whole phrase
@@ -491,7 +506,7 @@ module Plugins
     match /poke (.+)/, method: :poke
     def poke(m, nick)
       r = rand(Poke.all.size)
-      poke = Poke.all[r].action.sub( "%s", nick )
+      poke = Poke.all[r].action.sub("%s", nick)
       m.reply "%s %s" % [ m.user.nick, poke ]
     end
 
@@ -515,7 +530,7 @@ module Plugins
     match /forgetpoke (.+)/, method: :removepoke
     def removepoke(m, action)
       begin
-        p = Poke.first( :action => action )
+        p = Poke.first(:action => action)
         if m.user.nick == p.nick or isdaddy(m.user.nick)
           p.destroy!
           m.reply "a'ight", true
@@ -654,7 +669,7 @@ module Plugins
     react_on :channel
 
     match /damn (.+)/, method: :damn_something
-    def damn_something( m, phrase )
+    def damn_something(m, phrase)
       m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"      
     end
   end # }}}
@@ -665,7 +680,7 @@ module Plugins
 
     timer INTERVAL, method: :updatefeed
     def updatefeed
-      feed = Feedzirra::Feed.fetch_and_parse( FEED )
+      feed = Feedzirra::Feed.fetch_and_parse(FEED)
       sub = feed.entries.first
       if defined? @old
         printnew sub unless sub.title == @old
@@ -673,8 +688,8 @@ module Plugins
       @old = sub.title
     end
 
-    def printnew( entry )
-      Channel( CHANNEL ).send "New Submission: #{entry.title} by #{entry.author} - #{entry.url}"
+    def printnew(entry)
+      Channel(CHANNEL).send "New Submission: #{entry.title} by #{entry.author} - #{entry.url}"
     end
   end # }}}
 
@@ -709,7 +724,7 @@ module Plugins
 
     match /rename (.+)/, method: :rename
     def rename(m, name)
-      if isdaddy( m.user.nick )
+      if isdaddy(m.user.nick)
         @bot.nick = name
         m.reply "a'ight", true
       else
@@ -848,7 +863,7 @@ module Plugins
     match /weather save (.+)/, method: :save
     def save(m, postal) # {{{
       begin
-        old = Weather.first( :nick => m.user.nick )
+        old = Weather.first(:nick => m.user.nick)
         old.destroy! unless old.nil?
 
         new = Weather.new(
@@ -868,7 +883,7 @@ module Plugins
 
     def get_user_postal(m, param) # {{{
       if param == '' || param.nil?
-        postal = Weather.first( :nick => m.user.nick )
+        postal = Weather.first(:nick => m.user.nick)
         if postal.nil?
           m.reply "Postal code not provided nor on file."
           return nil
@@ -951,14 +966,104 @@ module Plugins
       User("nickserv").send("identify " + SECRET)
     end
   end # }}}
+
+  class Twentyones # {{{
+    include Cinch::Plugin
+    react_on :channel
+
+    match /twentyone/, method: :starttwentyone
+    def starttwentyone(m)
+      Twentyone.all(:nick => m.user.nick).destroy!
+      4.times do
+        roll(m.user.nick)
+      end
+
+      gettotal(m.user.nick)
+      m.reply "Starting a game of 21 - Your dice: %s- Total %s" % [
+        @string,
+        @total
+      ]
+      reply(m, @total)
+    end
+
+    match /roll/, method: :rollagain
+    def rollagain(m)
+      if Twentyone.first(:nick => m.user.nick).nil?
+        m.reply "No Game started yet", true
+      else
+        roll(m.user.nick)
+        gettotal(m.user.nick)
+        m.reply "Your dice: %s- Total %s" % [
+          @string,
+          @total
+        ]
+        reply(m, @total)
+      end
+    end
+
+    match /stand/, method: :stay
+    def stay(m)
+      if Twentyone.first(:nick => m.user.nick).nil?
+        m.reply "No Game started yet", true
+      else
+        count = 0
+        until count >= 18
+          roll = 1 + rand(6)
+          count = count + roll
+          m.reply "Dealer rolls %s - Total %s" % [ roll, count ]
+        end
+        gettotal(m.user.nick)
+        if @total > count or count > 21
+          m.reply "Your score: %s. You win :)" % [ @total ], true
+        elsif @total == count
+          m.reply "Your score: %s. Tie!" % [ @total ], true
+        elsif @total > count and count <= 21
+          m.reply "Your score: %s. You lose :(" % [ @total ], true
+        end
+        Twentyone.all(:nick => m.user.nick).destroy!
+      end
+    end
+
+    private
+
+    def roll(nick)
+      roll = 1 + rand(6)
+      die = Twentyone.new(
+        :nick   => nick,
+        :value  => roll
+      )
+      die.save
+    end
+
+    def gettotal(nick)
+      dice = Twentyone.all(:nick => nick)
+      @total = 0
+      @string = ""
+      dice.each do |d|
+        @string = @string + d.value.to_s + " "
+        @total = @total + d.value
+      end
+    end
+
+    def reply(m, total)
+      if total > 22
+        Twentyone.all(:nick => m.user.nick).destroy!
+        m.reply "You're over 21. Busted!", true
+      else
+        m.reply "!roll to roll again, !stand to stay.", true
+      end
+    end
+
+  end # }}}
+
 end # }}}
 
 # Create bot {{{
 bot = Cinch::Bot.new do
   configure do |c| # {{{
   c.nick            = NICK
-  c.server          = "irc.freenode.org"
-  c.port            = 6667
+  c.server          = SERVER
+  c.port            = PORT
   c.channels        = [ CHANNEL ]
   c.plugins.plugins = [
     Plugins::IsItDown,
@@ -974,13 +1079,14 @@ bot = Cinch::Bot.new do
     Plugins::Cookies,
     Plugins::Weathers,
     Plugins::Daddies,
-    Plugins::Identify
+    Plugins::Identify,
+    Plugins::Twentyones
   ]
   end # }}}
 
   helpers do # {{{
     def isdaddy(n)
-      d = Daddy.first( :nick => n )
+      d = Daddy.first(:nick => n)
       unless d.nil?
         true
       else
@@ -989,5 +1095,4 @@ bot = Cinch::Bot.new do
     end
   end # }}}
 end # }}}
-
 bot.start
