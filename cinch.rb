@@ -1017,7 +1017,7 @@ module Plugins
           m.reply "Your score: %s. You win :)" % [ @total ], true
         elsif @total == count
           m.reply "Your score: %s. Tie!" % [ @total ], true
-        elsif @total > count and count <= 21
+        elsif @total < count and count <= 21
           m.reply "Your score: %s. You lose :(" % [ @total ], true
         end
         Twentyone.all(:nick => m.user.nick).destroy!
