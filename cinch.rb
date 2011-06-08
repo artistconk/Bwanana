@@ -670,7 +670,7 @@ module Plugins
 
     match /damn (.+)/, method: :damn_something
     def damn_something(m, phrase)
-      m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"      
+      m.reply "damn you, you little #{phrase.upcase}! i'm going to strangle you"      
     end
   end # }}}
 
@@ -1046,7 +1046,7 @@ module Plugins
     end
 
     def reply(m, total)
-      if total > 22
+      if total > 21
         Twentyone.all(:nick => m.user.nick).destroy!
         m.reply "You're over 21. Busted!", true
       else
