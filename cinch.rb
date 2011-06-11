@@ -996,7 +996,7 @@ module Plugins
         m.reply "Your dice: %s- Total %s" % [
           @string,
           @total
-        ]
+        ], true
         reply(m, @total)
       end
     end
@@ -1006,12 +1006,20 @@ module Plugins
       if Twentyone.first(:nick => m.user.nick).nil?
         m.reply "No Game started yet", true
       else
+        dice = Array.new
         count = 0
         until count >= 18
-          roll = 1 + rand(6)
-          count = count + roll
-          m.reply "Dealer rolls %s - Total %s" % [ roll, count ]
+          value = 1 + rand(6)
+          dice << value
+          count = count + value
         end
+
+        string = ""
+        dice.each do |d|
+          string = string + d.to_s + " "
+        end
+        m.reply "Dealer rolls %s- Total %s" % [ string, count ]
+
         gettotal(m.user.nick)
         if @total > count or count > 21
           m.reply "Your score: %s. You win :)" % [ @total ], true
@@ -1049,8 +1057,11 @@ module Plugins
       if total > 21
         Twentyone.all(:nick => m.user.nick).destroy!
         m.reply "You're over 21. Busted!", true
+      elsif total == 21
+        Twentyone.all(:nick => m.user.nick).destroy!
+        m.reply "You got 21. Congratulations!", true
       else
-        m.reply "!roll to roll again, !stand to stay.", true
+        m.reply "!roll to roll again, !stand to stay."
       end
     end
 
