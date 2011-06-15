@@ -338,7 +338,7 @@ module Plugins
           end
 
           # Check owner
-          if v.nick == m.user.nick or isdaddy(m.user.nick)
+          if v.nick == m.user.nick or isdaddy(m.user)
             v.destroy!
 
             # Delete version or whole phrase
@@ -530,7 +530,7 @@ module Plugins
     def removepoke(m, action)
       begin
         p = Poke.first(:action => action)
-        if m.user.nick == p.nick or isdaddy(m.user.nick)
+        if m.user.nick == p.nick or isdaddy(m.user)
           p.destroy!
           m.reply "a'ight", true
         else
@@ -669,7 +669,11 @@ module Plugins
 
     match /damn (.+)/, method: :damn_something
     def damn_something(m, phrase)
+<<<<<<< HEAD
       m.reply "damn you, you little #{phrase.upcase}! i'm going to strangle you"      
+=======
+      m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"
+>>>>>>> 82f55f4d5709959054aab7d3c8a1df89e80bbf86
     end
   end # }}}
 
@@ -715,7 +719,7 @@ module Plugins
 
   class Rename # {{{
     include Cinch::Plugin
-    
+
     listen_to :quit, method: :listen
     def listen(m)
       @bot.nick = "Bwanana" if m.user.nick == "Bwanana"
@@ -723,7 +727,7 @@ module Plugins
 
     match /rename (.+)/, method: :rename
     def rename(m, name)
-      if isdaddy(m.user.nick)
+      if isdaddy(m.user)
         @bot.nick = name
         m.reply "a'ight", true
       else
@@ -901,7 +905,7 @@ module Plugins
           dad.save
 
           m.reply "You're my daddy!", true
-        elsif isdaddy(m.user.nick)
+        elsif isdaddy(m.user)
           m.reply "I wuv you daddy!", true
         else
           m.reply "You're not my daddy", true
@@ -915,7 +919,7 @@ module Plugins
     match /alsodaddy (.+)/, method: :alsodaddy
     def alsodaddy(m, nick)
       begin
-        if isdaddy(m.user.nick)
+        if isdaddy(m.user)
           dad = Daddy.new(
             :nick   => nick
           )
@@ -1044,13 +1048,9 @@ module Plugins
 end # }}}
 
 # Helpers {{{
-def isdaddy(n)
-  d = Daddy.first(:nick => n)
-  unless d.nil?
-    true
-  else
-    false
-  end
+def isdaddy(user)
+  d = Daddy.first(:nick => user.nick)
+  not d.nil?
 end # }}}
 
 # Create bot {{{
