@@ -669,11 +669,7 @@ module Plugins
 
     match /damn (.+)/, method: :damn_something
     def damn_something(m, phrase)
-<<<<<<< HEAD
-      m.reply "damn you, you little #{phrase.upcase}! i'm going to strangle you"      
-=======
-      m.reply "damn you, you little #{phrase.downcase.upcase!}! i'm going to strangle you"
->>>>>>> 82f55f4d5709959054aab7d3c8a1df89e80bbf86
+      m.reply "damn you, you little #{phrase.upcase}! i'm going to strangle you"
     end
   end # }}}
 
