@@ -12,7 +12,6 @@ require "cgi"
 require "dm-core"
 require "dm-types"
 require "dm-migrations"
-require "em-http-request"
 require "mechanize"
 require "nokogiri"
 require "feedzirra"
@@ -738,14 +737,6 @@ module Plugins
     include Cinch::Plugin
     react_on :channel
 
-    QUERY_PARAMS = {
-      'cc' => '*',
-      'link' => 'xoap',
-      'prod' => 'xoap',
-      'par' => WEATHER_PAR,
-      'key' => WEATHER_API,
-    }
-
     match /weather help/, method: :help
 
     match /weather$/, method: :report
@@ -754,22 +745,17 @@ module Plugins
       postal = get_user_postal(m, param)
       return if postal.nil?
 
-      EventMachine.run do
-          http = EventMachine::HttpRequest.new("http://xoap.weather.com/weather/local/#{postal}").get :query => QUERY_PARAMS
-          http.callback do
-          weather = Nokogiri::XML(http.response).root.xpath("/weather")
-          if weather.xpath("//cc")
-            m.reply "Location: #{weather.xpath('//loc/dnam').inner_text} - Updated at: #{weather.xpath('//cc/lsup').text}"
-            current = "Temp: #{weather.xpath('//cc/tmp').text}F/#{convert_to_c(weather.xpath('//cc/tmp').text)}C - "
-            current << "Feels like: #{weather.xpath("//cc/flik").text}F/#{convert_to_c(weather.xpath("//cc/flik").text)}C - "
-            current << "Wind: #{weather.xpath("//cc/wind/t").text} #{weather.xpath("//cc/wind/s").text} MPH - "
-            current << "Conditions: #{weather.xpath("//cc/t").text} - "
-            current << "Humidity: #{weather.xpath("//cc/hmid").text}%"
-            m.reply current
-          else
-            m.reply "City code not found."
-          end
-        end
+      weather = Nokogiri::XML(open(weatherurl(postal)))
+      if weather.xpath("//cc")
+        m.reply "Location: #{weather.xpath('//loc/dnam').inner_text} - Updated at: #{weather.xpath('//cc/lsup').text}"
+        current = "Temp: #{weather.xpath('//cc/tmp').text}F/#{convert_to_c(weather.xpath('//cc/tmp').text)}C - "
+        current << "Feels like: #{weather.xpath("//cc/flik").text}F/#{convert_to_c(weather.xpath("//cc/flik").text)}C - "
+        current << "Wind: #{weather.xpath("//cc/wind/t").text} #{weather.xpath("//cc/wind/s").text} MPH - "
+        current << "Conditions: #{weather.xpath("//cc/t").text} - "
+        current << "Humidity: #{weather.xpath("//cc/hmid").text}%"
+        m.reply current
+      else
+        m.reply "City code not found."
       end
     end # }}}
 
@@ -778,54 +764,38 @@ module Plugins
       postal = get_user_postal(m, param)
       return if postal.nil?
 
-      EventMachine.run do
-        http = EventMachine::HttpRequest.new("http://xoap.weather.com/weather/local/#{postal}").get :query => QUERY_PARAMS.merge('dayf' => '5')
-        http.callback do
-          weather = Nokogiri::XML(http.response).root.xpath("/weather")
-          if weather.xpath('//dayf')
-            m.reply "Location: #{weather.xpath('//loc/dnam').inner_text}"
-            weather.xpath('//dayf/day').each do |day|
-              forecast = "#{day['t']} #{day['dt']} - High: #{day.xpath('hi').text}F/#{convert_to_c(day.xpath('hi').text)}C"
-              forecast << "# - Low: #{day.xpath('low').text}F/#{convert_to_c(day.xpath('low').text)}C"
+      weather = Nokogiri::XML(open(weatherurl(postal) + "&dayf=5"))
+      if weather.xpath('//dayf')
+        m.reply "Location: #{weather.xpath('//loc/dnam').inner_text}"
+        weather.xpath('//dayf/day').each do |day|
+          forecast = "#{day['t']} #{day['dt']} - High: #{day.xpath('hi').text}F/#{convert_to_c(day.xpath('hi').text)}C"
+          forecast << "# - Low: #{day.xpath('low').text}F/#{convert_to_c(day.xpath('low').text)}C"
 
-              day.xpath('part').each do |part|
-                if part['p'] == "n"
-                  forecast << " - Night: #{part.xpath('t').text}"
-                else
-                  forecast << " - Day: #{part.xpath('t').text}"
-                end
-              end
-              m.reply forecast
+          day.xpath('part').each do |part|
+            if part['p'] == "n"
+              forecast << " - Night: #{part.xpath('t').text}"
+            else
+              forecast << " - Day: #{part.xpath('t').text}"
             end
-          else
-            m.reply "City code not found."
           end
+          m.reply forecast
         end
-        http.errback do
-          m.reply "Error accessing weather information, please try again."
-        end
+      else
+        m.reply "City code not found."
       end
     end # }}}
 
     match /weather search (.+)/, method: :search
     def search(m, postal) # {{{
-      EventMachine.run do
-        http = EventMachine::HttpRequest.new("http://xoap.weather.com/search/search").get :query => { 'where' => postal }
-        http.callback do
-          weather = Nokogiri::XML(http.response).root
-          if weather.xpath('/search/loc')
-            locations = []
-            weather.xpath('/search/loc').each do |location|
-              locations << "#{location.text} (#{location['id']})"
-            end
-            m.reply(locations.join(", "))
-          else
-            m.reply "City code not found."
-          end
+      weather = Nokogiri::XML(open("http://xoap.weather.com/search/search?where=#{postal}"))
+      if weather.xpath('/search/loc')
+        locations = []
+        weather.xpath('/search/loc').each do |location|
+          locations << "#{location.text} (#{location['id']})"
         end
-        http.errback do
-          m.reply "Error retrieving results."
-        end
+        m.reply(locations.join(", "))
+      else
+        m.reply "City code not found."
       end
     end # }}}
 
@@ -880,6 +850,10 @@ module Plugins
     end # }}}
 
     private
+
+    def weatherurl(postal) # {{{
+      return "http://xoap.weather.com/weather/local/#{postal}?par=#{WEATHER_PAR}&key=#{WEATHER_API}&cc=*"
+    end # }}}
 
     def get_user_postal(m, param) # {{{
       if param == '' || param.nil?
