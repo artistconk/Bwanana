@@ -14,7 +14,6 @@ require "dm-types"
 require "dm-migrations"
 require "mechanize"
 require "nokogiri"
-require "feedzirra"
 require "open-uri"
 require "uri"
 require "time"
@@ -679,16 +678,21 @@ module Plugins
 
     timer INTERVAL, method: :updatefeed
     def updatefeed
-      feed = Feedzirra::Feed.fetch_and_parse(FEED)
-      sub = feed.entries.first
+      feed = Nokogiri::XML(open(FEED))
+      sub = feed.css("entry").first
+      new = sub.css("title").inner_text.to_s
       if defined? @old
-        printnew sub unless sub.title == @old
+        printnew(sub) unless new == @old
       end
-      @old = sub.title
+      @old = new
     end
 
     def printnew(entry)
-      Channel(CHANNEL).send "New Submission: #{entry.title} by #{entry.author} - #{entry.url}"
+      Channel(CHANNEL).send "New Submission: %s by %s - %s" % [ 
+        entry.css("title").inner_text,
+        entry.css("author").inner_text.split.join,
+        entry.css("link").to_s.split("\"")[5]
+      ]
     end
   end # }}}
 
