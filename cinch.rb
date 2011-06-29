@@ -508,44 +508,42 @@ module Plugins
     include Cinch::Plugin
     react_on :channel
 
+    match /rempoke (.+)/, method: :addpoke
+    match /poke rem (.+)/, method: :addpoke
+    def addpoke(m, action)
+      poke = Poke.new(
+        :action     => action,
+        :nick       => m.user.nick,
+        :created_at => Time.now
+      )
+      poke.save
+
+      m.reply "a'ight", true
+    rescue
+      m.reply "Oops something went wrong", true
+    end
+
+    match /forgetpoke (.+)/, method: :removepoke
+    match /poke forget (.+)/, method: :removepoke
+    def removepoke(m, action)
+      p = Poke.first(:action => action)
+      if m.user.nick == p.nick or isdaddy(m.user)
+        p.destroy!
+        m.reply "a'ight", true
+      else
+        m.reply "Not yours", true
+      end
+    rescue
+      m.reply "Oops something went wrong", true
+    end
+
     match /poke (.+)/, method: :poke
     def poke(m, nick)
       r = rand(Poke.all.size)
       poke = Poke.all[r].action.sub("%s", nick)
       m.reply "%s %s" % [ m.user.nick, poke ]
-    end
-
-    match /rempoke (.+)/, method: :addpoke
-    def addpoke(m, action)
-      begin
-        poke = Poke.new(
-          :action     => action,
-          :nick       => m.user.nick,
-          :created_at => Time.now
-        )
-        poke.save
-
-        m.reply "a'ight", true
-      rescue
-        m.reply "Oops something went wrong", true
-        raise
-      end
-    end
-
-    match /forgetpoke (.+)/, method: :removepoke
-    def removepoke(m, action)
-      begin
-        p = Poke.first(:action => action)
-        if m.user.nick == p.nick or isdaddy(m.user)
-          p.destroy!
-          m.reply "a'ight", true
-        else
-          m.reply "Not yours", true
-        end
-      rescue
-        m.reply "Oops something went wrong", true
-        raise
-      end
+    rescue
+      m.reply "Oops something went wrong", true
     end
   end
   # }}}
@@ -1056,6 +1054,7 @@ module Plugins
     include Cinch::Plugin
 
     match /remtodo (.+)/, method: :remember
+    match /todo rem (.+)/, method: :remember
     def remember(m, item)
       Todo.create(:item => item)
       m.reply "a'ight", true
@@ -1064,6 +1063,7 @@ module Plugins
     end
 
     match /forgettodo (.+)/, method: :forget
+    match /todo forget (.+)/, method: :forget
     def forget(m, itemid)
       Todo.get(itemid).destroy
       m.reply "a'ight", true
@@ -1071,6 +1071,7 @@ module Plugins
       m.reply "Oops, something went wrong", true
     end
 
+    match /todo list/, method: :list
     match /todo/, method: :list
     def list(m)
       todos = []

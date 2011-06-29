@@ -115,12 +115,16 @@ _!find foo_
 Pokes nick with a random poke.  
 _!poke crshd_
 
+**!poke rem**  
 **!rempoke**  
 Saves a poke. %s gets replaced with the poked user.  
+_!poke rem pokes %s with a stick_
 _!rempoke pokes %s with a stick_
 
+**!poke forget**  
 **!forgetpoke**  
 Forgets a poke. Only the user who set the poke can delete it.  
+_!poke forget pokes %s with a stick_
 _!forgetpoke pokes %s with a stick_
 
 ## Cookies
@@ -181,15 +185,20 @@ _!stand_
 ## Todo
 
 **!todo**  
+**!todo list**  
 Shows a list of the items on the todo list  
 _!todo_
 
+**!todo rem**  
 **!remtodo**  
 Remembers something that is to do  
+_!todo rem clean up this code_
 _!remtodo clean up this code_
 
+**!todo forget**  
 **!forgettodo**  
 Forgets an item from the todo list (by ID)  
+_!todo forget 1_
 _!forgettodo 1_
 
 ## Non-User Controlled Functions
