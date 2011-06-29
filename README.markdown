@@ -178,6 +178,20 @@ _!roll_
 Stays, and lets the dealer roll  
 _!stand_
 
+## Todo
+
+**!todo**  
+Shows a list of the items on the todo list  
+_!todo_
+
+**!remtodo**  
+Remembers something that is to do  
+_!remtodo clean up this code_
+
+**!forgettodo**  
+Forgets an item from the todo list (by ID)  
+_!forgettodo 1_
+
 ## Non-User Controlled Functions
 
 There’s also some functions that are not controlled by users
