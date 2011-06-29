@@ -129,6 +129,13 @@ class Twentyone # {{{
   property(:value,      Integer)
 end # }}}
 
+class Todo # {{{
+  include DataMapper::Resource
+
+  property(:id,         Serial)
+  property(:item,       String)
+end # }}}
+
 # If database doesn't exist, create. Else update
 if(!File.exists?(DBFILE))
   DataMapper.auto_migrate!
@@ -1045,6 +1052,36 @@ module Plugins
 
   end # }}}
 
+  class Todos # {{{
+    include Cinch::Plugin
+
+    match /remtodo (.+)/, method: :remember
+    def remember(m, item)
+      Todo.create(:item => item)
+      m.reply "a'ight", true
+    rescue
+      m.reply "Oops, something went wrong", true
+    end
+
+    match /forgettodo (.+)/, method: :forget
+    def forget(m, itemid)
+      Todo.get(itemid).destroy
+      m.reply "a'ight", true
+    rescue
+      m.reply "Oops, something went wrong", true
+    end
+
+    match /todo/, method: :list
+    def list(m)
+      todos = []
+      Todo.all.each { |s|
+        todos << "%s: %s" % [s.id, s.item]
+      }
+      m.reply todos.join("\n")
+    rescue
+      m.reply "Oops, something went wrong", true
+    end
+  end # }}}
 end # }}}
 
 # Helpers {{{
@@ -1075,7 +1112,8 @@ bot = Cinch::Bot.new do
     Plugins::Weathers,
     Plugins::Daddies,
     Plugins::Identify,
-    Plugins::Twentyones
+    Plugins::Twentyones,
+    Plugins::Todos
   ]
   end # }}}
 end # }}}
