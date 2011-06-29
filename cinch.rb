@@ -537,7 +537,7 @@ module Plugins
       m.reply "Oops something went wrong", true
     end
 
-    match /poke (.+)/, method: :poke
+    match /poke ((?!forget|rem).+)/, method: :poke
     def poke(m, nick)
       r = rand(Poke.all.size)
       poke = Poke.all[r].action.sub("%s", nick)
@@ -1072,7 +1072,7 @@ module Plugins
     end
 
     match /todo list/, method: :list
-    match /todo/, method: :list
+    match /todo$/, method: :list
     def list(m)
       todos = []
       Todo.all.each { |s|
