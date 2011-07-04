@@ -23,10 +23,10 @@ require "time"
 # Server
 SERVER      = "irc.freenode.org"
 PORT        = 6667
-CHANNEL     = "#pixelfuckers"
+CHANNEL     = "#testzecke"
 
 # Bot
-NICK        = "Bwanana"
+NICK        = "Bwanana_dev"
 SECRET      = "doyoureallythinkiputthisinhere"
 INTERVAL    = 300
 
@@ -134,6 +134,14 @@ class Todo # {{{
 
   property(:id,         Serial)
   property(:item,       String)
+end # }}}
+
+class LastUrl # {{{
+  include DataMapper::Resource
+
+  property(:id,         Serial)
+  property(:link,       String)
+  property(:user,       String)
 end # }}}
 
 # If database doesn't exist, create. Else update
@@ -1083,6 +1091,38 @@ module Plugins
       m.reply "Oops, something went wrong", true
     end
   end # }}}
+
+  class LastUrls # {{{
+    include Cinch::Plugin
+    react_on :channel
+
+    listen_to :channel
+    def listen(m)
+      url = m.message.scan(/(http[^\s]*)/)
+      url.each { |u|
+        LastUrl.create(
+          :user => m.user.nick,
+          :link => u.first
+        )
+      }
+    end
+
+    match /lasturl ([1-9]*) (.+)/, method: :list
+    def list(m, num, user)
+      urls = LastUrl.all(:user => user)
+
+      num = num.to_i
+      num = urls.size if num > urls.size
+
+      list = []
+      urls[-num..urls.size].each { |s|
+        list << "-- #{s.link}"
+      }
+      m.reply list.join("\n")
+    rescue
+      m.reply "Oops, something went wrong", true
+    end
+  end # }}}
 end # }}}
 
 # Helpers {{{
@@ -1114,7 +1154,8 @@ bot = Cinch::Bot.new do
     Plugins::Daddies,
     Plugins::Identify,
     Plugins::Twentyones,
-    Plugins::Todos
+    Plugins::Todos,
+    Plugins::LastUrls
   ]
   end # }}}
 end # }}}
