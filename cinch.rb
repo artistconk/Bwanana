@@ -21,12 +21,12 @@ require "time"
 
 # Config {{{
 # Server
-SERVER      = "irc.freenode.org"
+SERVER      = "localhost"
 PORT        = 6667
-CHANNEL     = "#testzecke"
+CHANNEL     = "#Bwanana"
 
 # Bot
-NICK        = "Bwanana_dev"
+NICK        = "Bwanana"
 SECRET      = "doyoureallythinkiputthisinhere"
 INTERVAL    = 300
 
