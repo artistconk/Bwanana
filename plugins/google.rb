@@ -1,3 +1,6 @@
+require "cgi"
+require "nokogiri"
+
 module Plugins
   class Google # {{{
     include Cinch::Plugin

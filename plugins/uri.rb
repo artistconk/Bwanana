@@ -1,3 +1,8 @@
+require "mechanize"
+require "nokogiri"
+require "uri"
+require "open-uri"
+
 module Plugins
   class Uri # {{{
     include Cinch::Plugin

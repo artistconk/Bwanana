@@ -1,3 +1,5 @@
+require "nokogiri"
+
 module Plugins
   class Submissions # {{{
     include Cinch::Plugin
