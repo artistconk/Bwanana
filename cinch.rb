@@ -28,7 +28,6 @@ DBFILE      = "/home/crshd/.config/cinch/database.db"
 # }}}
 
 # Requires
-$:.unshift("#{Dir.pwd}/plugins")
 
 # Gems
 require "rubygems"
@@ -39,6 +38,7 @@ require "dm-migrations"
 require "time"
 
 # Plugins
+$LOAD_PATH << "./plugins"
 require "actions"
 require "admin"
 require "cookies"
