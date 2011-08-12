@@ -1,3 +1,6 @@
+require "open-uri"
+require "nokogiri"
+
 class Weather # {{{
   include DataMapper::Resource
 
